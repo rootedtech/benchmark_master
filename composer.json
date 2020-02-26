@@ -1,0 +1,31 @@
+{
+  "name": "jwoods357/benchmark_master",
+  "description": "The objective of the project is to create an application which can benchmark the performance of a set of PHP functions and generate a report comparing the performance.",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Johnel Woods",
+      "email": "jrwoods17@gmail.com"
+    }
+  ],
+  "require-dev": {
+    "phpunit/phpunit": "*.*",
+    "phpbench/phpbench": "@dev"
+  },
+  "require": {
+    "symfony/config": "^5.0",
+    "symfony/http-kernel": "^5.0",
+    "symfony/http-foundation": "^5.0",
+    "symfony/routing": "^5.0",
+    "symfony/dependency-injection": "^5.0",
+    "symfony/framework-bundle": "^5.0",
+    "opis/closure": "^3.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "BenchmarkMaster\\": "src/",
+      "Acme\\": "lib"
+    }
+  }
+}
