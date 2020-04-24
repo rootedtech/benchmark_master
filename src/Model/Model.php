@@ -4,13 +4,27 @@ namespace BenchmarkMaster\Model;
 
 /**
  * Class Model
+ * Base class for all models/components
  * @package BenchmarkMaster\Model
  */
-abstract class Model implements Loggable
+abstract class Model
 {
-    public function validate(){}
+    /**
+     * @var Boolean $isValid
+     */
+    protected $isValid;
+
+    public function validate()
+    {
+        //TODO: Identify and add generic validation here
+    }
+
+    /**
+     * @param array $params
+     * @todo Use params passed in to child to get custom message and type here
+     */
     public function log($params = [])
     {
-        // TODO: Implement log() method.
+        // TODO: Base logging logic goes here
     }
 }

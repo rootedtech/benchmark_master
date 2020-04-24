@@ -1,0 +1,18 @@
+{
+  "bootstrap": "vendor/autoload.php",
+  "php_config": {
+    "memory_limit": "10M"
+  },
+  "path": "tests/benchmarks",
+  "xml_storage_path": "tests/benchmarks/_storage",
+  "retry_threshold": 5,
+  "reports": {
+    "test_report": {
+        "extends": "aggregate",
+        "cols": ["subject", "its", "best", "worst", "mean", "mode", "rstdev"]
+    }
+  },
+  "extensions": [
+    "PhpBench\\Extensions\\XDebug\\XDebugExtension"
+  ]
+}

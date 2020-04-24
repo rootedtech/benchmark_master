@@ -1,0 +1,110 @@
+<?php
+
+use BenchmarkMaster\Model\Benchmark;
+use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
+use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Kernel as BaseKernel;
+use Symfony\Component\Routing\RouteCollectionBuilder;
+
+require __DIR__.'/vendor/autoload.php';
+
+/**
+ * Class Kernel
+ * Custom front controller to enable use don web server if needed
+ * NOTE: DO NOT USE. This file is used as example of different I/O option
+ */
+class Kernel extends BaseKernel
+{
+    use MicroKernelTrait;
+
+    public function registerBundles()
+    {
+        return [
+            new Symfony\Bundle\FrameworkBundle\FrameworkBundle()
+        ];
+    }
+
+    protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader)
+    {
+        // PHP equivalent of config/packages/framework.yaml
+        $c->loadFromExtension('framework', [
+            'secret' => 'S0ME_SECRET'
+        ]);
+    }
+
+    protected function configureRoutes(RouteCollectionBuilder $routes)
+    {
+        // kernel is a service that points to this class
+        // optional 3rd argument is the route name
+        $routes->add('/', 'kernel::dashboard');
+        $routes->add('/report/{iterations}', 'kernel::report');
+
+    }
+
+    /**
+     * @param $iterations
+     * @return JsonResponse
+     */
+    public function report($iterations)
+    {
+        $result = ['total_execution_time'=> 0];
+
+        if($iterations < 1) {
+            return new JsonResponse([
+                'error' => [
+                    'message' => 'Invalid number of iterations'
+                ]
+            ]);
+        }
+
+        $functions = array(
+            'function1' => function($item = 'test') { return $item; },
+            'function2' => function() {
+                $test = 'report 2';
+                return $this;
+            },
+            'function3' => function() {
+                $test_array     = array('test', 'test', 'test', 'test', 'test' );
+                return $closure = array_map( function ( $item ) { return $item; }, $test_array );
+            },
+            'function4' => function() {
+                $closure       = function ( $item ) { return $item; };
+                $test_array    = array('test', 'test', 'test', 'test', 'test' );
+                return $closure      = array_map( $closure, $test_array );
+            },
+            'function5' => function() {
+                return $fn = create_function( '$item', 'return $item;' );
+            },
+            'function6' => function() {
+                $test = 'report 6';
+            },
+        );
+
+        foreach ($functions as $functionName => $functionCallable) {
+
+            $test = new Benchmark($functionName, $functionCallable);
+
+            if( $test->validate() ){
+
+                for($n = 0; $n < $iterations; $n++){
+                    $test->execute();
+                    $result['total_execution_time'] += $test->getExecutionTime();
+                }
+            }
+        }
+
+        return new JsonResponse([
+            'Total Execution Time' => $result['total_execution_time'],
+            'Average Execution Time' => $result['total_execution_time'] / $iterations
+        ]);
+    }
+}
+
+$kernel = new Kernel('dev', true);
+$request = Request::createFromGlobals();
+$response = $kernel->handle($request);
+$response->send();
+$kernel->terminate($request, $response);
