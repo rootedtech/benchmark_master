@@ -92,10 +92,25 @@ class Benchmark extends Model implements Serializable
     }
 
     /**
+     * @param $propertyArray
+     * @return Benchmark
+     */
+    public static function __set_state($propertyArray) // As of PHP 5.1.0
+    {
+        $obj = new Benchmark($propertyArray['methodName'], $propertyArray['methods']);
+        $obj->execution_time = $propertyArray['execution_time'];
+        $obj->isValid = $propertyArray['isValid'];
+        $obj->iterations = $propertyArray['iterations'];
+
+        return $obj;
+    }
+
+    /**
      * Validate if object instantiated correctly
      * @return bool
      */
-    public function validate(){
+    public function validate()
+    {
         parent::validate();
         $this->isValid = isset($this->isValid) ? $this->isValid : is_callable($this->methodName);
         return $this->isValid;
@@ -104,8 +119,9 @@ class Benchmark extends Model implements Serializable
     /**
      * Execute Callable function
      */
-    public function execute(){
-        if($this->isValid){
+    public function execute()
+    {
+        if ($this->isValid) {
             ($this->methodName)();
         }
     }
@@ -142,20 +158,6 @@ class Benchmark extends Model implements Serializable
         $this->iterations = $temp->iterations;
         $this->methodName = $temp->methodName;
         $this->methods = $temp->methods;
-    }
-
-    /**
-     * @param $propertyArray
-     * @return Benchmark
-     */
-    public static function __set_state($propertyArray) // As of PHP 5.1.0
-    {
-        $obj = new Benchmark($propertyArray['methodName'], $propertyArray['methods']);
-        $obj->execution_time = $propertyArray['execution_time'];
-        $obj->isValid = $propertyArray['isValid'];
-        $obj->iterations = $propertyArray['iterations'];
-
-        return $obj;
     }
 
     /**
